@@ -1,1 +1,1 @@
-# asiainfo-aipaas
+# aipaas
