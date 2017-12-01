@@ -1,0 +1,3 @@
+include "sdk-mcs-base"
+include "sdk-mcs-srv"
+include "sdk-mcs-comp"

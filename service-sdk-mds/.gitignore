@@ -1,0 +1,15 @@
+.idea/
+build/
+target/
+bin/
+.project
+.classpath
+.settings/
+.gradle/
+.settings
+/.gradle
+/PaaS-MDS-Base/.classpath
+/PaaS-MDS-Base/.project
+/PaaS-MDS-EX-Auth/.project
+/PaaS-MDS-EX-Auth/.classpath
+/PaaS-MDS-EX-Auth/.settings

@@ -1,0 +1,12 @@
+.*
+!/.gitignore
+bin/*/*
+build/*/*
+target/*/*
+reports/*/*
+/.project
+/build/
+/bin/
+/reports/
+/dubbo-registry.dat
+/dubbo-registry.dat.lock

@@ -1,0 +1,94 @@
+
+dependencies{
+
+
+	compile 'com.ai:ipaas-common:0.3'
+	compile 'org.mongodb:mongodb-driver:3.5.0'
+	compile 'org.apache.logging.log4j:log4j-api:2.2'
+}
+
+
+jar {
+	baseName moduleName
+	version moduleVersion
+	manifest {
+		attributes 'packageName': moduleName, 'Built-By': builtBy,'create-date': new Date().format('yyyy-MM-dd HH:mm:ss')
+	}
+}
+
+
+
+
+publishing {
+	publications {
+	   mavenJar(MavenPublication) {
+        	groupId group
+        	artifactId "${moduleName}"
+            artifact sourcesJar
+            version moduleVersion
+            pom.withXml {
+				asNode().children().last() + {
+					delegate.dependencies {
+						delegate.dependency {
+							delegate.groupId("com.ai")
+							delegate.artifactId("ipaas-common")
+							delegate.version("0.3")
+						}
+						delegate.dependency {
+							delegate.groupId("org.apache.logging.log4j")
+							delegate.artifactId("log4j-api")
+							delegate.version("2.2")
+						}
+						delegate.dependency {
+							delegate.groupId("org.mongodb")
+							delegate.artifactId("mongodb-driver")
+							delegate.version("3.3.0")
+						}
+					}
+				}
+			}
+		}
+            
+		publishing.publications.create("${moduleName}", MavenPublication) {
+			groupId group
+			artifactId moduleName
+			version moduleVersion
+			artifact  jar
+			pom.withXml {
+				asNode().children().last() + {
+					delegate.dependencies {
+						delegate.dependency {
+							delegate.groupId("com.ai")
+							delegate.artifactId("ipaas-common")
+							delegate.version("0.3")
+						}
+						delegate.dependency {
+							delegate.groupId("org.apache.logging.log4j")
+							delegate.artifactId("log4j-api")
+							delegate.version("2.2")
+						}
+						delegate.dependency {
+							delegate.groupId("org.mongodb")
+							delegate.artifactId("mongodb-driver")
+							delegate.version("3.3.0")
+						}
+					}
+				}
+			}
+		}
+	}
+	repositories {
+		maven {
+			credentials {
+				username = publishUserName
+				password = publishUserPassword
+			}
+			if(moduleVersion.endsWith('-SNAPSHOT')) {
+				url publishSnapShotsURL
+			} else {
+				url publishReleaseURL
+			}
+		}
+	}
+}
+

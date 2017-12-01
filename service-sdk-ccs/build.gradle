@@ -1,0 +1,184 @@
+allprojects{
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'maven-publish'
+
+    ext {
+		moduleVersion = version != "unspecified"?version:'0.3.2'
+		moduleMode = project.hasProperty('mode') ? project.getProperty('mode') : 'R'
+		if(moduleMode == 'S'){
+			moduleVersion = moduleVersion + "-SNAPSHOT";
+		}
+        publishUserName = "devadm"
+        publishUserPassword = "Devadm@1212"
+        publishSnapShotsURL="http://10.1.228.199:18081/nexus/content/repositories/snapshots/"
+		publishReleaseURL="http://10.1.228.199:18081/nexus/content/repositories/releases/"
+	    builtBy="gradle 2.1"
+    }
+
+    compileJava.dependsOn clean
+    sourceCompatibility = 1.7
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+    	exclude group: 'log4j', module: 'log4j'
+    	exclude group: "org.slf4j", module: "slf4j-log4j12"
+    }
+    group = 'com.ai'
+}
+
+subprojects{
+    [compileJava, compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
+
+    repositories {
+        maven{ url "http://10.1.228.199:18081/nexus/content/groups/public/"  }
+    }
+
+    dependencies{
+        compile 'com.ai:ipaas-common:0.3'
+        testCompile(
+                "org.springframework:spring-test:4.1.5.RELEASE",
+                "junit:junit:4.11"
+        )
+
+        testCompile  ('org.apache.jmeter:ApacheJMeter_junit:2.13'){
+            exclude group: 'commons-math3', module: 'commons-math3'
+            exclude group: 'commons-pool2', module: 'commons-pool2'
+            exclude group: 'xerces', module: 'xercesImpl'
+       		exclude group: 'xerces', module: 'xerces'
+        }
+
+    }
+
+}
+
+
+project("sdk-ccs-inner"){
+    project.ext {
+        moduleName = "ipaas-ccs-inner"
+    }
+
+    jar {
+        baseName moduleName
+        version moduleVersion
+        include 'com/ai/paas/ipaas/ccs/inner/**'
+        manifest {
+            attributes 'packageName': moduleName, 'Built-By': builtBy,'create-date': new Date().format('yyyy-MM-dd HH:mm:ss')
+        }
+    }
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		baseName moduleName
+	    version moduleVersion
+	    classifier = 'sources'
+	    from sourceSets.main.allSource
+	}
+	javadoc {
+		exclude               "**/internal/**"
+		failOnError				false
+		options.memberLevel = JavadocMemberLevel.PUBLIC
+		
+		options.addStringOption("Xdoclint", "none")
+		
+	}
+	
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		baseName moduleName
+		version moduleVersion
+		classifier = 'javadoc'
+	
+		from javadoc.destinationDir
+	}
+	
+	artifacts {
+	    archives sourcesJar
+		archives javadocJar
+	}
+    publish.dependsOn build
+}
+
+project("sdk-ccs-srv"){
+    project.ext {
+        moduleName = "ipaas-ccs"
+    }
+
+    jar {
+        baseName moduleName
+        version moduleVersion
+        include 'com/ai/paas/ipaas/ccs/**'
+        manifest {
+            attributes 'packageName': moduleName, 'Built-By': builtBy,'create-date': new Date().format('yyyy-MM-dd HH:mm:ss')
+        }
+    }
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		baseName moduleName
+	    version moduleVersion
+	    classifier = 'sources'
+	    from sourceSets.main.allSource
+	}
+	
+	javadoc {
+		exclude               "**/internal/**"
+		failOnError				false
+		options.memberLevel = JavadocMemberLevel.PUBLIC
+		
+		options.addStringOption("Xdoclint", "none")
+		
+	}
+	
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		baseName moduleName
+		version moduleVersion
+		classifier = 'javadoc'
+	
+		from javadoc.destinationDir
+	}
+	artifacts {
+	    archives sourcesJar
+		archives javadocJar
+	}
+	    publish.dependsOn build
+}
+
+project("sdk-ccs-base"){
+    project.ext {
+        moduleName = "ipaas-zookeeper-utility"
+    }
+
+    jar {
+        baseName moduleName
+        version moduleVersion
+        include 'com/ai/paas/ipaas/ccs/**'
+        manifest {
+            attributes 'packageName': moduleName, 'Built-By': builtBy,'create-date': new Date().format('yyyy-MM-dd HH:mm:ss')
+        }
+    }
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		baseName moduleName
+	    version moduleVersion
+	    classifier = 'sources'
+	    from sourceSets.main.allSource
+	}
+	javadoc {
+		exclude               "**/internal/**"
+		failOnError				false
+		options.memberLevel = JavadocMemberLevel.PUBLIC
+		
+		options.addStringOption("Xdoclint", "none")
+		
+	}
+	
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		baseName moduleName
+		version moduleVersion
+		classifier = 'javadoc'
+	
+		from javadoc.destinationDir
+	}
+	
+	artifacts {
+	    archives sourcesJar
+		archives javadocJar
+	}
+    publish.dependsOn build
+}

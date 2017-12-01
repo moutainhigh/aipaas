@@ -1,0 +1,87 @@
+dependencies {
+    compile 'com.ai:ipaas-common:0.3'
+    compile 'com.ai:ipaas-zookeeper-utility:0.3'
+    compile ('org.apache.kafka:kafka_2.10:0.9.0.1'){
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+        exclude group: 'com.101tec', module: 'zkclient'
+    }
+    compile 'org.slf4j:slf4j-api:1.7.19'
+    testCompile 'junit:junit:4.12'
+    testCompile	 ('org.apache.jmeter:ApacheJMeter_junit:2.13'){
+        exclude group: 'commons-math3', module: 'commons-math3'
+        exclude group: 'commons-pool2', module: 'commons-pool2'
+    }
+}
+
+publishing {
+    publications {
+        mavenJar(MavenPublication) {
+        	groupId group
+        	artifactId "${moduleName}"
+            artifact sourcesJar
+            version moduleVersion
+            pom.withXml {
+                asNode().children().last() + {
+                    delegate.dependencies {
+                        delegate.dependency {
+                            delegate.groupId("com.ai")
+                            delegate.artifactId("ipaas-common")
+                            delegate.version("0.3")
+                        }
+                        delegate.dependency {
+                            delegate.groupId("com.ai")
+                            delegate.artifactId("ipaas-zookeeper-utility")
+                            delegate.version("0.3")
+                        }
+                        delegate.dependency {
+                            delegate.groupId("org.apache.kafka")
+                            delegate.artifactId("kafka_2.10")
+                            delegate.version("0.9.0.1")
+                        }
+                    }
+                }
+            }
+        }
+        
+        publishing.publications.create("${moduleName}", MavenPublication) {
+            groupId group
+            artifactId moduleName
+            version moduleVersion
+            artifact  jar
+            pom.withXml {
+                asNode().children().last() + {
+                    delegate.dependencies {
+                        delegate.dependency {
+                            delegate.groupId("com.ai")
+                            delegate.artifactId("ipaas-common")
+                            delegate.version("0.3")
+                        }
+                        delegate.dependency {
+                            delegate.groupId("com.ai")
+                            delegate.artifactId("ipaas-zookeeper-utility")
+                            delegate.version("0.3")
+                        }
+                        delegate.dependency {
+                            delegate.groupId("org.apache.kafka")
+                            delegate.artifactId("kafka_2.10")
+                            delegate.version("0.9.0.1")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            if(moduleVersion.endsWith('-SNAPSHOT')) {
+                url publishSnapShotsURL
+            } else {
+                url publishReleaseURL
+            }
+            credentials {
+                username = publishUserName
+                password = publishUserPassword
+            }
+        }
+    }
+}

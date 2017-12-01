@@ -1,0 +1,6 @@
+.idea
+target/
+PaaS-SDK-MCS-IC-Auth.iml
+/build/
+/bin/
+/.DS_Store
